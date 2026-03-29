@@ -82,10 +82,11 @@ The plan here is to wire up a few n8n agents that act as an AI-powered IT team �
 ## 📁 Repo Structure
 
 ```
-homelab-docs/
+homelab/
 ├── index.html                    # Docs index (GitHub Pages home)
 ├── README.md                     # You are here
-├── unraid-media-stack-guide.html # Media stack setup guide
+├── docs/                         # Documentation
+│   └── ...
 ├── configs/                      # Config files (no secrets)
 │   └── ...
 └── scripts/                      # Utility scripts
@@ -113,4 +114,4 @@ homelab-docs/
 
 ---
 
-*Built and maintained by [YOUR_NAME] — mostly held together by caffeine and stubbornness.*
+*Built and maintained by Mr. Hobbit — mostly held together by caffeine and stubbornness.*
