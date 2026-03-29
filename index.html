@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homelab Docs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #5b8def;
+    --accent2: #3dd68c;
+    --accent3: #f5a623;
+    --text: #c8cedd;
+    --text-dim: #6b7591;
+    --text-bright: #eef0f8;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 60px 32px;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 52px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(91,141,239,0.1);
+    border: 1px solid rgba(91,141,239,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+
+  header p {
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .doc-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 48px;
+  }
+
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    text-decoration: none;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+
+  .doc-card:hover {
+    background: var(--surface2);
+    border-left-color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  .doc-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .doc-info { flex: 1; }
+
+  .doc-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .doc-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .doc-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .doc-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tag-unraid { background: rgba(91,141,239,0.1); color: #7aa4f5; border: 1px solid rgba(91,141,239,0.2); }
+  .tag-network { background: rgba(61,214,140,0.1); color: #6ee8b4; border: 1px solid rgba(61,214,140,0.2); }
+  .tag-security { background: rgba(224,92,92,0.1); color: #f5a0a0; border: 1px solid rgba(224,92,92,0.2); }
+  .tag-wip { background: rgba(107,117,145,0.1); color: var(--text-dim); border: 1px solid var(--border); }
+
+  .doc-arrow {
+    color: var(--text-dim);
+    font-size: 16px;
+    font-family: var(--mono);
+  }
+
+  .placeholder {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    opacity: 0.5;
+  }
+
+  .placeholder .doc-icon {
+    background: transparent;
+  }
+
+  .placeholder .doc-name {
+    color: var(--text-dim);
+  }
+
+  footer {
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer span {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .footer-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .footer-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">homelab-docs</div>
+    <h1>Documentation</h1>
+    <p>Self-hosted infrastructure guides and configuration references.</p>
+  </header>
+
+  <div class="section-label">Guides</div>
+  <div class="doc-grid">
+
+    <!-- REAL DOC — update href to match your actual filename -->
+    <a class="doc-card" href="./unraid-media-stack-guide.html">
+      <div class="doc-icon">🎬</div>
+      <div class="doc-info">
+        <div class="doc-name">Unraid Media Stack</div>
+        <div class="doc-desc">qBittorrent · SABnzbd · Radarr · Sonarr · Prowlarr · Jellyfin · Jellyseerr behind Gluetun VPN</div>
+      </div>
+      <div class="doc-meta">
+        <span class="doc-tag tag-unraid">Unraid</span>
+        <span class="doc-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- PLACEHOLDERS — replace these as you add more docs -->
+    <div class="placeholder">
+      <div class="doc-icon">🌐</div>
+      <div class="doc-info">
+        <div class="doc-name">Coming soon...</div>
+        <div class="doc-desc">Add more guides by uploading HTML files and linking them here</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>homelab-docs</span>
+    <a class="footer-link" href="https://github.com" target="_blank">github.com</a>
+  </footer>
+
+</div>
+</body>
+</html>
