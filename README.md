@@ -2,7 +2,7 @@
 
 Personal reference for my self-hosted homelab running on Unraid. If something breaks and I'm staring blankly at a terminal, this is where I come first.
 
-> 📖 **Formatted guides:** [homelab-docs on GitHub Pages](https://YOUR_USERNAME.github.io/homelab-docs/)
+> 📖 **Formatted guides:** [homelab-docs on GitHub Pages](https://hobbitsgit.github.io/homelab-docs/)
 
 ---
 
