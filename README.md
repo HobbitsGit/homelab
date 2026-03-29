@@ -12,7 +12,7 @@ Personal reference for my self-hosted homelab running on Unraid. If something br
 |---|---|
 | **Case** | Jonsbo N6 |
 | **Motherboard** | MSI PRO B650M-A WiFi ProSeries |
-| **CPU** | `YOUR_CPU_HERE` |
+| **CPU** | AMD Ryzen 5 8500G |
 | **RAM** | 32GB G.Skill Flare X5 DDR5 |
 | **Storage** | 3x Seagate IronWolf Pro 28TB HDD |
 | **Cache / Appdata** | Samsung 990 Evo Plus 1TB NVMe SSD |
