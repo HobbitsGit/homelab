@@ -44,7 +44,7 @@ Personal reference for my self-hosted homelab running on Unraid. If something br
 | Jellyfin | Media server | 8096 |
 | Jellyseerr | Media requests | 5055 |
 
-📄 [Full setup guide →](docs/media_stack_setup.html)
+📄 [Full setup guide →](https://hobbitsgit.github.io/homelab/docs/media_stack_setup.html)
 
 ---
 
