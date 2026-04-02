@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unraid Homelab — Maintenance Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #5b8def;
+    --accent2: #3dd68c;
+    --accent3: #f5a623;
+    --accent4: #e05c5c;
+    --text: #c8cedd;
+    --text-dim: #6b7591;
+    --text-bright: #eef0f8;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  nav {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .nav-logo .title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .nav-logo .subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+
+  .nav-section { padding: 4px 0; }
+
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 20px 4px;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 20px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--text-bright);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+
+  nav a .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  main {
+    flex: 1;
+    padding: 48px 56px;
+    max-width: 900px;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(91,141,239,0.1);
+    border: 1px solid rgba(91,141,239,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .page-header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 600px;
+  }
+
+  .section { margin-bottom: 64px; display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .section-header .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card h3 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 16px 0 8px;
+    font-family: var(--mono);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    background: rgba(61,214,140,0.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  td:first-child {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  pre {
+    background: #0a0c11;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    overflow-x: auto;
+    margin: 16px 0;
+    line-height: 1.7;
+  }
+
+  .alert {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+  .alert.info { background: rgba(91,141,239,0.08); border-color: rgba(91,141,239,0.2); color: #a0b8f5; }
+  .alert.warn { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.2); color: #f5c96a; }
+  .alert.success { background: rgba(61,214,140,0.08); border-color: rgba(61,214,140,0.2); color: #6ee8b4; }
+  .alert.danger { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: #f5a0a0; }
+
+  .steps { counter-reset: step; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+    font-family: var(--sans);
+  }
+
+  .step-content p, .step-content li {
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  p code, li code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent3);
+    background: rgba(245,166,35,0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  p { margin-bottom: 10px; }
+  ul { padding-left: 20px; }
+  ul li { margin-bottom: 4px; }
+
+  .scrolltop {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .scrolltop.visible { opacity: 1; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="title">Unraid Homelab</div>
+    <div class="subtitle">Maintenance Guide</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a href="#" onclick="show('schedule')" class="active">
+      <span class="dot" style="background:#5b8def"></span> Schedule
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Updates</div>
+    <a href="#" onclick="show('containers')">
+      <span class="dot" style="background:#f5a623"></span> Containers
+    </a>
+    <a href="#" onclick="show('unraid-os')">
+      <span class="dot" style="background:#f5a623"></span> Unraid OS
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Backups</div>
+    <a href="#" onclick="show('backup-overview')">
+      <span class="dot" style="background:#3dd68c"></span> Strategy
+    </a>
+    <a href="#" onclick="show('appdata-backup')">
+      <span class="dot" style="background:#3dd68c"></span> Appdata (SSD)
+    </a>
+    <a href="#" onclick="show('flash-backup')">
+      <span class="dot" style="background:#3dd68c"></span> Flash Drive
+    </a>
+    <a href="#" onclick="show('backblaze')">
+      <span class="dot" style="background:#3dd68c"></span> Backblaze B2
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Restore</div>
+    <a href="#" onclick="show('restore')">
+      <span class="dot" style="background:#e05c5c"></span> Restore Procedures
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Health</div>
+    <a href="#" onclick="show('parity')">
+      <span class="dot" style="background:#5b8def"></span> Parity Checks
+    </a>
+    <a href="#" onclick="show('drives')">
+      <span class="dot" style="background:#5b8def"></span> Drive Health
+    </a>
+    <a href="#" onclick="show('ups')">
+      <span class="dot" style="background:#5b8def"></span> UPS
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Reference</div>
+    <a href="#" onclick="show('commands')">
+      <span class="dot" style="background:#6b7591"></span> Quick Commands
+    </a>
+  </div>
+</nav>
+
+<main>
+  <a class="back-link" href="index.html">← homelab-docs</a>
+
+  <div class="page-header">
+    <div class="badge">Unraid</div>
+    <h1>Maintenance Guide</h1>
+    <p>Routine maintenance tasks — updates, backups to local SSD and Backblaze, and restore procedures.</p>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div id="schedule" class="section active">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">📅</div>
+      <h2>Routine Maintenance Schedule</h2>
+    </div>
+
+    <div class="card">
+      <table>
+        <tr><th>Task</th><th>Frequency</th><th>How</th></tr>
+        <tr><td>Parity check</td><td>Monthly (1st, 3:00 AM)</td><td>Automated via Scheduler</td></tr>
+        <tr><td>Appdata backup to SSD</td><td>Weekly (Sunday, 3:00 AM)</td><td>Appdata Backup plugin</td></tr>
+        <tr><td>Backblaze backup</td><td>Ongoing / continuous</td><td>Configured via plugin</td></tr>
+        <tr><td>Docker container updates</td><td>Weekly</td><td>Manual or notification-triggered</td></tr>
+        <tr><td>Unraid OS updates</td><td>As released</td><td>Manual after reviewing changelog</td></tr>
+        <tr><td>SMART drive check</td><td>Monthly</td><td>Via Unraid Disk Settings</td></tr>
+        <tr><td>NVMe TRIM</td><td>Monthly (15th)</td><td>Automated via Scheduler</td></tr>
+        <tr><td>Review notification emails</td><td>Ongoing</td><td>Check Gmail → forwarded to Proton</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONTAINERS -->
+  <div id="containers" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,166,35,0.1)">🐳</div>
+      <h2>Updating Containers</h2>
+    </div>
+
+    <div class="card">
+      <h3>Method 1 — Via Unraid Dashboard (Recommended)</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to the <strong>Docker</strong> tab</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Look for containers showing an update available badge</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Click the container icon → <strong>Check for Updates</strong></p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>If an update is available, click <strong>Update</strong></p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><p>The container will pull the new image and restart automatically</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Method 2 — Update All at Once</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Docker</strong> tab → click <strong>Check for Updates</strong> at the top</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Review the list of available updates</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Click <strong>Update All</strong> — or update individually to be safe</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Best Practice</h3>
+      <ul>
+        <li>Update <strong>one container at a time</strong> when possible</li>
+        <li>After updating, verify the container starts and the web UI is accessible</li>
+        <li>Check logs after updating: click the container icon → <strong>Logs</strong></li>
+        <li>For critical containers (Gluetun, SABnzbd, qBittorrent), verify VPN is still working:</li>
+      </ul>
+      <pre>docker exec qbittorrent curl -s https://api.ipify.org
+docker exec sabnzbd curl -s https://api.ipify.org</pre>
+      <p style="font-size:13px;">Both should return a VPN IP, not your real home IP.</p>
+    </div>
+
+    <div class="card">
+      <h3>Container Update Order</h3>
+      <p style="margin-bottom:12px;font-size:13px;">Update in this order to avoid dependency issues:</p>
+      <table>
+        <tr><th>Order</th><th>Container</th></tr>
+        <tr><td>1</td><td>Gluetun (VPN gateway)</td></tr>
+        <tr><td>2</td><td>qBittorrent</td></tr>
+        <tr><td>3</td><td>SABnzbd</td></tr>
+        <tr><td>4</td><td>Prowlarr</td></tr>
+        <tr><td>5</td><td>Radarr</td></tr>
+        <tr><td>6</td><td>Sonarr</td></tr>
+        <tr><td>7</td><td>Jellyfin</td></tr>
+        <tr><td>8</td><td>Jellyseerr</td></tr>
+        <tr><td>9</td><td>FlareSolverr</td></tr>
+        <tr><td>10</td><td>All others</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- UNRAID OS -->
+  <div id="unraid-os" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,166,35,0.1)">⬆️</div>
+      <h2>Updating Unraid OS</h2>
+    </div>
+
+    <div class="card">
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Tools → Update OS</strong></p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Review the release notes before updating</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Unraid will download and stage the update</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>Schedule the update for a low-activity time</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><p>The server will reboot to apply the update</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-content"><p>After reboot, verify all containers start correctly</p></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-content"><p>Run a quick parity check if prompted</p></div></div>
+      </div>
+      <div class="alert warn">
+        <span class="alert-icon">⚠️</span>
+        <div>Always back up your Unraid flash drive before a major OS version update.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKUP OVERVIEW -->
+  <div id="backup-overview" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(61,214,140,0.1)">🗄️</div>
+      <h2>Backup Strategy <span class="tag" style="background:rgba(61,214,140,0.1);color:var(--accent2)">3-2-1</span></h2>
+    </div>
+
+    <div class="card">
+      <table>
+        <tr><th>Copy</th><th>Location</th><th>What</th></tr>
+        <tr><td>1</td><td>Array (protected by parity)</td><td>All media files</td></tr>
+        <tr><td>2</td><td>250GB SSD (Unassigned Device)</td><td>Appdata, flash config</td></tr>
+        <tr><td>3</td><td>Backblaze B2 (offsite)</td><td>Appdata, important documents</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>What IS backed up</h3>
+      <ul>
+        <li>Docker appdata (container configs, databases)</li>
+        <li>Unraid flash/USB config</li>
+        <li>Important documents share</li>
+        <li>VM configs (if applicable)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>What is NOT backed up locally</h3>
+      <ul>
+        <li>Media files (movies, TV shows) — these can be re-downloaded</li>
+        <li>Photos — backed up to Backblaze directly</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- APPDATA BACKUP -->
+  <div id="appdata-backup" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(61,214,140,0.1)">💾</div>
+      <h2>Appdata Backup <span class="tag" style="background:rgba(61,214,140,0.1);color:var(--accent2)">Local SSD</span></h2>
+    </div>
+
+    <p>The <strong>Appdata Backup</strong> plugin handles this automatically.</p>
+
+    <div class="card">
+      <h3>Schedule</h3>
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Frequency</td><td>Weekly, Sunday at 3:00 AM</td></tr>
+        <tr><td>Destination</td><td><code>/mnt/disks/Backup/appdata</code></td></tr>
+        <tr><td>Retention</td><td>30 days</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Manual Backup</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Settings → Appdata Backup</strong></p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Click <strong>Start Backup</strong></p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Monitor the log for completion</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Verifying the Backup</h3>
+      <ul>
+        <li>Go to <strong>Main</strong> tab → scroll to Unassigned Devices</li>
+        <li>Check the <strong>Used</strong> column on the Backup SSD</li>
+        <li>Or browse to <code>/mnt/disks/Backup/appdata</code> via the Files tab to see archives</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3>What Gets Backed Up</h3>
+      <ul>
+        <li><code>/mnt/cache/appdata/</code> — all Docker container config data</li>
+        <li>Unraid flash drive configuration</li>
+        <li>VM metadata</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- FLASH BACKUP -->
+  <div id="flash-backup" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(61,214,140,0.1)">🔌</div>
+      <h2>Flash Drive Backup</h2>
+    </div>
+
+    <div class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <div>The Unraid flash drive stores your array config, Docker templates, and settings. Losing it without a backup means reconfiguring from scratch.</div>
+    </div>
+
+    <div class="card">
+      <h3>Automatic Flash Backup (via Appdata Backup Plugin)</h3>
+      <p>The Appdata Backup plugin backs up the flash drive automatically as part of its weekly run, to <code>/mnt/disks/Backup/appdata</code>.</p>
+    </div>
+
+    <div class="card">
+      <h3>Manual Flash Backup</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Main</strong> tab</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Click on <strong>Flash</strong> in the Boot Device section</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Click <strong>Flash Backup → Download</strong></p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>Save the ZIP file somewhere safe (external drive, cloud storage)</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Unraid Connect Flash Backup</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Tools → Unraid Connect</strong></p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Enable <strong>Flash Backup</strong> in the settings</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Unraid will automatically back up your flash config to Lime Technology's servers</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKBLAZE -->
+  <div id="backblaze" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(61,214,140,0.1)">☁️</div>
+      <h2>Backblaze B2 <span class="tag" style="background:rgba(61,214,140,0.1);color:var(--accent2)">Offsite</span></h2>
+    </div>
+
+    <div class="card">
+      <h3>Setup Options</h3>
+      <table>
+        <tr><th>Method</th><th>Notes</th></tr>
+        <tr><td>Duplicati</td><td>Docker container, GUI-based, supports encryption and scheduling — recommended for appdata and documents</td></tr>
+        <tr><td>Rclone</td><td>Command-line via User Scripts plugin, very flexible and fast, good for large file sets</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Recommended Backup Targets</h3>
+      <table>
+        <tr><th>Folder</th><th>Priority</th></tr>
+        <tr><td><code>/mnt/disks/Backup/appdata</code></td><td>High — offsite copy of local SSD backup</td></tr>
+        <tr><td><code>/mnt/user/Documents</code></td><td>High — irreplaceable personal files</td></tr>
+        <tr><td><code>/mnt/user/Photos</code></td><td>High — personal photos</td></tr>
+        <tr><td><code>/mnt/user/data/media</code></td><td>Low — re-downloadable, large</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Monitoring Backblaze Backups</h3>
+      <ul>
+        <li>Log into <strong>backblaze.com</strong> to verify files are being uploaded</li>
+        <li>Check your backup container logs weekly</li>
+        <li>Set up email alerts in Backblaze for failed uploads</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- RESTORE -->
+  <div id="restore" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(224,92,92,0.1)">♻️</div>
+      <h2>Restore Procedures</h2>
+    </div>
+
+    <div class="card">
+      <h3>Restore Appdata from Local SSD</h3>
+      <p style="margin-bottom:12px;font-size:13px;">Use this when a container's config gets corrupted or you need to roll back.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Stop the affected container</h4><p>Docker tab → click container → <strong>Stop</strong></p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Rename the corrupted folder</h4>
+          <pre>mv /mnt/cache/appdata/CONTAINERNAME /mnt/cache/appdata/CONTAINERNAME.bak</pre>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Find the backup archive</h4>
+          <pre>ls /mnt/disks/Backup/appdata/</pre>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Extract the backup</h4>
+          <pre>tar -xzf /mnt/disks/Backup/appdata/BACKUP_FILE.tar.gz -C /mnt/cache/appdata/</pre>
+        </div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><p>Start the container and verify it works</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Single Container Restore via Plugin</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Settings → Appdata Backup</strong></p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Look for the restore option in the plugin UI</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Select the container and backup date to restore from</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Restore Appdata from Backblaze</h3>
+      <p style="margin-bottom:12px;font-size:13px;">Use this if the local SSD backup is also unavailable (catastrophic failure).</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Install Duplicati or Rclone on a working system</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Connect to your Backblaze B2 bucket</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Download the relevant backup archive</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>Follow the same extraction steps as the local SSD restore above</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Restore Unraid Flash / Config</h3>
+      <h4>If USB drive fails:</h4>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Get a new USB drive (minimum 1GB, quality brand)</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Download the Unraid OS installer from <strong>unraid.net</strong> and flash to the new USB</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Copy your flash backup ZIP contents to the new drive's <code>/config</code> folder</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>Boot from the new USB drive</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><p>License is tied to the USB GUID — transfer it at <strong>keys.unraid.net</strong> if needed</p></div></div>
+      </div>
+      <h4>If config is corrupted (drive is fine):</h4>
+      <ul style="margin-top:8px;">
+        <li>Boot into Unraid → <strong>Tools → New Config</strong> (resets array assignments — use with caution)</li>
+        <li>Or restore specific config files from your flash backup ZIP</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PARITY -->
+  <div id="parity" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">🔁</div>
+      <h2>Parity Checks</h2>
+    </div>
+
+    <div class="card">
+      <h3>Schedule</h3>
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Frequency</td><td>Monthly, 1st of the month at 3:00 AM</td></tr>
+        <tr><td>Type</td><td>Read-only (non-correcting)</td></tr>
+        <tr><td>Configured in</td><td>Settings → Scheduler → Parity Check</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Manual Parity Check</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Go to <strong>Main</strong> tab</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Click <strong>Check</strong> next to the array</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>Choose <strong>Read-Only</strong> for routine checks; <strong>Correcting</strong> only if a previous check found errors</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Interpreting Results</h3>
+      <table>
+        <tr><th>Result</th><th>Meaning</th></tr>
+        <tr><td>0 errors</td><td>Everything is healthy ✅</td></tr>
+        <tr><td>Errors found (first time)</td><td>Run a correcting check to fix</td></tr>
+        <tr><td>Errors found repeatedly</td><td>Possible failing drive — check SMART data</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Performance Impact</h3>
+      <ul>
+        <li>Array read/write speeds reduced by ~50% during check</li>
+        <li>Jellyfin streaming and transcoding may be affected</li>
+        <li>Scheduled for 3:00 AM to minimize impact</li>
+        <li>A 28TB parity check typically takes 8–16 hours</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- DRIVES -->
+  <div id="drives" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">🖴</div>
+      <h2>Drive Health Monitoring</h2>
+    </div>
+
+    <div class="card">
+      <h3>SMART Data</h3>
+      <p style="margin-bottom:12px;font-size:13px;">Go to <strong>Main</strong> tab → click any drive → click <strong>SMART</strong>.</p>
+      <p style="margin-bottom:8px;font-size:13px;">Key values to watch:</p>
+      <table>
+        <tr><th>Attribute</th><th>Target</th></tr>
+        <tr><td>Reallocated Sectors Count</td><td>0</td></tr>
+        <tr><td>Pending Sector Count</td><td>0</td></tr>
+        <tr><td>Uncorrectable Sector Count</td><td>0</td></tr>
+        <tr><td>Temperature</td><td>Below 50°C</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Temperature Ranges</h3>
+      <table>
+        <tr><th>Drive Type</th><th>Normal</th><th>Investigate</th></tr>
+        <tr><td>HDD</td><td>30–50°C</td><td>Above 55°C</td></tr>
+        <tr><td>NVMe SSD</td><td>30–70°C</td><td>Above 75°C</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Notifications</h3>
+      <p style="font-size:13px;">Unraid sends email alerts for:</p>
+      <ul>
+        <li>Drive SMART warnings</li>
+        <li>Array errors</li>
+        <li>Parity check completion / results</li>
+        <li>Temperature warnings</li>
+        <li>Plugin / OS update availability</li>
+      </ul>
+      <div class="alert info" style="margin-top:14px">
+        <span class="alert-icon">ℹ️</span>
+        <div>Alerts go to Gmail → forwarded automatically to Proton Mail.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPS -->
+  <div id="ups" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">⚡</div>
+      <h2>UPS Management</h2>
+    </div>
+
+    <div class="card">
+      <h3>Hardware</h3>
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Model</td><td>CyberPower CP1500PFCLCD</td></tr>
+        <tr><td>Type</td><td>Pure sine wave, 900W</td></tr>
+        <tr><td>Protects</td><td>NAS, router, switch, access point</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Unraid Configuration</h3>
+      <p style="margin-bottom:10px;font-size:13px;">Go to <strong>Settings → UPS Settings</strong> to configure:</p>
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>Cable</td><td>USB</td></tr>
+        <tr><td>Type</td><td>CyberPower</td></tr>
+        <tr><td>Shutdown battery level</td><td>25–30%</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Power Outage Sequence</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Power fails → UPS switches to battery</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Unraid monitors battery percentage</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><p>When battery reaches configured threshold, Unraid initiates clean shutdown</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><p>All containers stop gracefully, array spins down safely</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><p>Power returns → manually power on the server</p></div></div>
+      </div>
+      <div class="alert info" style="margin-top:14px">
+        <span class="alert-icon">ℹ️</span>
+        <div>At ~130W load, the CP1500PFCLCD provides approximately 20–30 minutes of runtime — enough for a clean shutdown with buffer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMANDS -->
+  <div id="commands" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(107,117,145,0.1)">⌨️</div>
+      <h2>Quick Reference Commands</h2>
+    </div>
+
+    <div class="card">
+      <h3>VPN Verification</h3>
+      <pre># Verify VPN is working for download clients
+docker exec qbittorrent curl -s https://api.ipify.org
+docker exec sabnzbd curl -s https://api.ipify.org</pre>
+    </div>
+
+    <div class="card">
+      <h3>Disk & Storage</h3>
+      <pre># Check disk usage
+df -h /mnt/user/data/
+
+# List media folders
+ls /mnt/user/data/media/movies/
+ls /mnt/user/data/media/tv/</pre>
+    </div>
+
+    <div class="card">
+      <h3>Container Management</h3>
+      <pre># View container logs
+docker logs CONTAINERNAME --tail 50
+
+# Restart a container
+docker restart CONTAINERNAME
+
+# Check all running containers
+docker ps</pre>
+    </div>
+
+    <div class="card">
+      <h3>Drive Health</h3>
+      <pre># Check NVMe health
+nvme smart-log /dev/nvme0
+
+# Check array drive SMART
+smartctl -a /dev/sdX</pre>
+    </div>
+  </div>
+
+</main>
+
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => {
+    if (a.getAttribute('onclick') && a.getAttribute('onclick').includes("'" + id + "'")) {
+      a.classList.add('active');
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('scrolltop').classList.toggle('visible', window.scrollY > 300);
+});
+</script>
+</body>
+</html>
