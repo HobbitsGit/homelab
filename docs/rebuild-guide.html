@@ -1269,26 +1269,51 @@ chown -R nobody:users /mnt/user/data</pre>
       <h3>Post-Install Configuration</h3>
       <p style="margin-bottom:10px;font-size:13px;">Access at <code>http://JELLYSEERR_IP:5055</code></p>
       <div class="steps">
-        <div class="step"><div class="step-num">1</div><div class="step-content"><p>Sign in with Jellyfin credentials</p></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-content"><p>Connect to Jellyfin server: <code>http://JELLYFIN_IP:8096</code></p></div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Configure Radarr</h4>
+        <div class="step"><div class="step-num">1</div><div class="step-content"><h4>Choose Server Type</h4>
+          <p>Select <strong>Jellyfin</strong> — this completes Step 1 of the wizard automatically.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content"><h4>Sign In (Step 2 of wizard)</h4>
+          <p>Enter your Jellyfin server details and admin credentials:</p>
           <table style="margin-top:8px">
             <tr><th>Field</th><th>Value</th></tr>
-            <tr><td>URL</td><td><code>http://RADARR_IP:7878</code></td></tr>
+            <tr><td>Jellyfin URL</td><td><code>http://JELLYFIN_IP</code></td></tr>
+            <tr><td>Port</td><td><code>8096</code></td></tr>
+            <tr><td>Use SSL</td><td>Leave unchecked (unless using HTTPS)</td></tr>
+            <tr><td>URL Base</td><td>Leave blank</td></tr>
+            <tr><td>Email Address</td><td>Optional — your email</td></tr>
+            <tr><td>Username</td><td>Your Jellyfin admin username</td></tr>
+            <tr><td>Password</td><td>Your Jellyfin admin password</td></tr>
+          </table>
+          <p style="margin-top:8px;">Click <strong>Sign In</strong> to proceed.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content"><h4>Configure Media Server (Step 3 of wizard)</h4>
+          <p>Jellyseerr will connect to Jellyfin and import your libraries. Confirm the libraries are detected correctly and click <strong>Continue</strong>.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Configure Radarr (Step 4 of wizard)</h4>
+          <table style="margin-top:8px">
+            <tr><th>Field</th><th>Value</th></tr>
+            <tr><td>Server Name</td><td>Radarr</td></tr>
+            <tr><td>Hostname or IP</td><td>RADARR_IP</td></tr>
+            <tr><td>Port</td><td><code>7878</code></td></tr>
             <tr><td>API Key</td><td>from Radarr Settings → General</td></tr>
             <tr><td>Quality Profile</td><td>HD/4K</td></tr>
             <tr><td>Root Folder</td><td><code>/data/media/movies</code></td></tr>
+            <tr><td>Default Server</td><td>✅ Enable</td></tr>
           </table>
         </div></div>
-        <div class="step"><div class="step-num">4</div><div class="step-content"><h4>Configure Sonarr</h4>
+        <div class="step"><div class="step-num">5</div><div class="step-content"><h4>Configure Sonarr (Step 4 of wizard)</h4>
           <table style="margin-top:8px">
             <tr><th>Field</th><th>Value</th></tr>
-            <tr><td>URL</td><td><code>http://SONARR_IP:8989</code></td></tr>
+            <tr><td>Server Name</td><td>Sonarr</td></tr>
+            <tr><td>Hostname or IP</td><td>SONARR_IP</td></tr>
+            <tr><td>Port</td><td><code>8989</code></td></tr>
             <tr><td>API Key</td><td>from Sonarr Settings → General</td></tr>
             <tr><td>Quality Profile</td><td>HD/4K</td></tr>
             <tr><td>Root Folder</td><td><code>/data/media/tv</code></td></tr>
+            <tr><td>Default Server</td><td>✅ Enable</td></tr>
           </table>
         </div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-content"><p>Click <strong>Finish Setup</strong>. You'll be taken to the Jellyseerr dashboard where users can browse and request media.</p></div></div>
       </div>
     </div>
   </div>
