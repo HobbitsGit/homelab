@@ -951,8 +951,7 @@ smartctl -a /dev/sdX</pre>
     
     <div class="card">
       <h3>System Specs</h3>
-      <pre><code>
-#Check system temps/fan speed
+      <pre><code>#Check system temps/fan speed
 watch -n 5 'echo "=== TEMPS ===" && \
 for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/temp*_input; do \
   label=$(cat ${f/_input/_label} 2>/dev/null); \
