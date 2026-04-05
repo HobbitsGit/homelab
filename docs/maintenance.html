@@ -951,29 +951,30 @@ smartctl -a /dev/sdX</pre>
     
     <div class="card">
       <h3>System Specs</h3>
-      <pre># Outputs list with temps, fan speeds, and pwm power
-watch -n 5 '
-  echo "=== TEMPS ===" && \
-  for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/temp*_input; do
-    label=$(cat ${f/_input/_label} 2>/dev/null)
-    echo "$label: $(($(cat $f)/1000))°C"
-  done && \
-  echo "" && \
-  echo "=== FANS ===" && \
-  for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/fan*_input; do
-    echo "$f: $(cat $f) RPM"
-  done && \
-  echo "" && \
-  echo "=== PWM ===" && \
-  for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/pwm[0-9]; do
-    echo "$f: $(cat $f)"
-  done && \
-  echo "" && \
-  echo "=== DRIVE TEMPS ===" && \
-  hddtemp /dev/sd* 2>/dev/null || smartctl -a /dev/sdb | grep -i temperature
-'
-</pre>
+      <pre><code>
+        #Check system temps/fan speed
+        watch -n 5 'echo "=== TEMPS ===" && \
+for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/temp*_input; do \
+  label=$(cat ${f/_input/_label} 2>/dev/null); \
+  echo "$label: $(($(cat $f)/1000))°C"; \
+done && \
+echo "" && \
+echo "=== FANS ===" && \
+for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/fan*_input; do \
+  echo "$f: $(cat $f) RPM"; \
+done && \
+echo "" && \
+echo "=== PWM ===" && \
+for f in /sys/devices/platform/nct6687.2592/hwmon/hwmon4/pwm[0-9]; do \
+  echo "$f: $(cat $f)"; \
+done && \
+echo "" && \
+echo "=== DRIVE TEMPS ===" && \
+hddtemp /dev/sd* 2>/dev/null || \
+smartctl -a /dev/sdb | grep -i temperature'
+</code></pre>
     </div>
+    
   </div>
 
 
