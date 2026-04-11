@@ -324,7 +324,13 @@ chmod -R a=,a+rX,u+w,g+w /mnt/user/data</pre>
     </table>
   </div>
   <div class="card"><h3>Post-Install</h3>
-    <p>Access at <code>http://UNRAID_IP:8080</code> or <code>https://qbittorrent.shiretech.dev</code>. Set save path to <code>/data/torrents/</code>, incomplete to <code>/data/torrents/incomplete/</code>. Network interface: <code>tun0</code> (kill switch).</p>
+    <p>Access at <code>http://UNRAID_IP:8080</code> or <code>https://qbittorrent.shiretech.dev</code>. 
+      <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><p>Set save path to <code>/data/torrents/</code></p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><p>Config → Categories: movies → <code>movies</code>, tv → <code>tv</code></p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><p>Config → Special (Advanced Settings) → <strong>host_whitelist</strong>: add <code>gluetun, radarr, sonarr</code></p></div></div>
+    </div>
+      , incomplete to <code>/data/torrents/incomplete/</code>. Network interface: <code>tun0</code> (kill switch).</p>
   </div>
 </div>
 
