@@ -69,6 +69,7 @@ Personal reference for my self-hosted homelab running on Unraid. If something br
 - [ ] Resolve Immich machine learning issues (smart search / face detection)
 - [ ] n8n AI IT Hobbit integration — once a GPU is installed
 - [ ] Docker Compose file of whole stack for easy re-deployment
+- [ ] Grafana + InfluxDB + Telegraf stack
 
 ---
 
