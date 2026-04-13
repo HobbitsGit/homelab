@@ -64,11 +64,12 @@ Personal reference for my self-hosted homelab running on Unraid. If something br
 
 ## 🗺️ Planned / In Progress
 
-- [ ] Home Assistant
 - [ ] Kopia + Backblaze B2 offsite backups
+- [ ] Unbound - Look into secure DNS since we are using Pi-Hole
+- [ ] Home Assistant - Bots, Thermostat, Doorbell Camera
 - [ ] Resolve Immich machine learning issues (smart search / face detection)
 - [ ] n8n AI IT Hobbit integration — once a GPU is installed
-- [ ] Docker Compose file of whole stack for easy re-deployment
+- [ ] Docker compose file of whole stack for easy re-deployment
 - [ ] Grafana + InfluxDB + Telegraf stack
 - [ ] ROM setup - EmuDeck and EmulationStatio (ROM share already setup)
 
