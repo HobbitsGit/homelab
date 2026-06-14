@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobookshelf — Metadata & Organization Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #5b8def;
+    --accent2: #3dd68c;
+    --accent3: #f5a623;
+    --accent4: #e05c5c;
+    --text: #c8cedd;
+    --text-dim: #6b7591;
+    --text-bright: #eef0f8;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  nav {
+    width: 260px;
+    min-width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  .nav-logo {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .nav-logo .title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .nav-logo .subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+
+  .nav-section { padding: 4px 0; }
+
+  .nav-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 8px 20px 4px;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 20px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--text-bright);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+
+  nav a .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  main {
+    flex: 1;
+    padding: 48px 56px;
+    max-width: 900px;
+  }
+
+  .page-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(61,214,140,0.1);
+    border: 1px solid rgba(61,214,140,0.2);
+    padding: 4px 12px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .page-header p {
+    color: var(--text-dim);
+    font-size: 14px;
+    max-width: 600px;
+  }
+
+  .section { margin-bottom: 64px; display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+
+  .section-header .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card h3 {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+  }
+
+  .card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 16px 0 8px;
+    font-family: var(--mono);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    background: rgba(61,214,140,0.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  td:first-child {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  pre {
+    background: #0a0c11;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    overflow-x: auto;
+    margin: 16px 0;
+    line-height: 1.7;
+  }
+
+  .alert {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+  .alert.info { background: rgba(91,141,239,0.08); border-color: rgba(91,141,239,0.2); color: #a0b8f5; }
+  .alert.warn { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.2); color: #f5c96a; }
+  .alert.success { background: rgba(61,214,140,0.08); border-color: rgba(61,214,140,0.2); color: #6ee8b4; }
+  .alert.danger { background: rgba(224,92,92,0.08); border-color: rgba(224,92,92,0.2); color: #f5a0a0; }
+
+  .steps { counter-reset: step; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 6px;
+    font-family: var(--sans);
+  }
+
+  .step-content p, .step-content li {
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  p code, li code {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent3);
+    background: rgba(245,166,35,0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  p { margin-bottom: 10px; }
+  ul { padding-left: 20px; }
+  ul li { margin-bottom: 4px; }
+
+  .scrolltop {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .scrolltop.visible { opacity: 1; }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .folder-tree {
+    background: #0a0c11;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    margin: 16px 0;
+  }
+
+  .folder-tree .dir { color: var(--accent3); }
+  .folder-tree .file { color: var(--accent2); }
+  .folder-tree .comment { color: var(--text-dim); }
+
+  .workflow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 16px 0;
+  }
+
+  .workflow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workflow-step:last-child { border-bottom: none; }
+
+  .workflow-icon {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .workflow-content { flex: 1; }
+  .workflow-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 3px;
+  }
+  .workflow-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .workflow-arrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 4px 0 4px 48px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="title">Audiobookshelf</div>
+    <div class="subtitle">Metadata & Organization</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a href="#" onclick="show('workflow')" class="active">
+      <span class="dot" style="background:#3dd68c"></span> Full Workflow
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Downloads</div>
+    <a href="#" onclick="show('mam')">
+      <span class="dot" style="background:#5b8def"></span> MAM Setup
+    </a>
+    <a href="#" onclick="show('qbit')">
+      <span class="dot" style="background:#5b8def"></span> qBittorrent Categories
+    </a>
+    <a href="#" onclick="show('hardlink')">
+      <span class="dot" style="background:#5b8def"></span> Hardlink Script
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Metadata</div>
+    <a href="#" onclick="show('metadata')">
+      <span class="dot" style="background:#f5a623"></span> Fixing Metadata
+    </a>
+    <a href="#" onclick="show('providers')">
+      <span class="dot" style="background:#f5a623"></span> Metadata Providers
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Organization</div>
+    <a href="#" onclick="show('structure')">
+      <span class="dot" style="background:#a78bfa"></span> Folder Structure
+    </a>
+    <a href="#" onclick="show('organizer')">
+      <span class="dot" style="background:#a78bfa"></span> Organizer Script
+    </a>
+    <a href="#" onclick="show('cleanup')">
+      <span class="dot" style="background:#a78bfa"></span> Cleanup
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Reference</div>
+    <a href="#" onclick="show('commands')">
+      <span class="dot" style="background:#6b7591"></span> Quick Commands
+    </a>
+  </div>
+</nav>
+
+<main>
+  <a class="back-link" href="../index.html">← homelab-docs</a>
+
+  <div class="page-header">
+    <div class="badge">Audiobookshelf</div>
+    <h1>Metadata & Organization Guide</h1>
+    <p>End-to-end workflow for downloading audiobooks from MAM, hardlinking to the library, fixing metadata, and organizing into a clean folder structure.</p>
+  </div>
+
+  <!-- WORKFLOW -->
+  <div id="workflow" class="section active">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(61,214,140,0.1)">🔄</div>
+      <h2>Full Workflow</h2>
+    </div>
+
+    <div class="card">
+      <h3>End-to-End Pipeline</h3>
+      <div class="workflow">
+        <div class="workflow-step">
+          <div class="workflow-icon">📚</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Download .torrent from MAM</div>
+            <div class="workflow-desc">Find the book at myanonamouse.net, download the .torrent file</div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">⬇️</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Add to qBittorrent with correct category</div>
+            <div class="workflow-desc">Set category to <code>audiobooks</code> — qBit saves to <code>/data/torrents/audiobooks/</code></div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">🔗</div>
+          <div class="workflow-content">
+            <div class="workflow-title">On-complete script hardlinks to media folder</div>
+            <div class="workflow-desc">File appears in <code>/data/media/audiobooks/</code> with zero extra storage used. qBit keeps seeding from <code>/data/torrents/audiobooks/</code></div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">🔍</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Audiobookshelf auto-detects new file</div>
+            <div class="workflow-desc">Library watcher fires automatically — no manual scan needed</div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">✏️</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Fix metadata in Audiobookshelf</div>
+            <div class="workflow-desc">Verify title, author, series, and sequence number are correct. Use Audible.com as the match provider.</div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">📁</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Run organizer script</div>
+            <div class="workflow-desc">Moves files into <code>Author / Series / ## - Title /</code> structure based on ABS metadata</div>
+          </div>
+        </div>
+        <div class="workflow-arrow">↓</div>
+        <div class="workflow-step">
+          <div class="workflow-icon">🧹</div>
+          <div class="workflow-content">
+            <div class="workflow-title">Clean up empty folders</div>
+            <div class="workflow-desc">Run the one-liner to remove leftover empty directories</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <span class="alert-icon">ℹ️</span>
+      <div>Always fix metadata <strong>before</strong> running the organizer script. The script uses whatever ABS has — if the author or series is wrong, the folder structure will be wrong too.</div>
+    </div>
+  </div>
+
+  <!-- MAM -->
+  <div id="mam" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">🐭</div>
+      <h2>MAM Setup</h2>
+    </div>
+
+    <div class="card">
+      <h3>Dynamic Seedbox Registration</h3>
+      <p>MAM requires your VPN IP to be registered as an authorized seedbox IP. Since the VPN IP can change, this is handled dynamically.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">
+          <h4>Create a seedbox session on MAM</h4>
+          <p>Go to <strong>Preferences → Security → Create Session</strong>. Enter your current VPN IP, enable <strong>ASN locked</strong> and <strong>Allow session to set Dynamic Seedbox</strong>. Copy the long session string.</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">
+          <h4>Add additional ASNs if needed</h4>
+          <p>ProtonVPN uses multiple data center providers (WorldStream ASN 49981, NForce ASN 43350). Add each via <strong>Manage Session → Add ASN via IP address</strong>.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">
+          <h4>Register the VPN IP</h4>
+          <pre>docker exec qbittorrent curl -c /scripts/mam.cookies \
+  -b 'mam_id=YOUR_SESSION_STRING' \
+  https://t.myanonamouse.net/json/dynamicSeedbox.php</pre>
+          <p>Should return <code>"Success":true</code></p>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Auto-Refresh (User Scripts)</h3>
+      <p>The MAM cookie is stored at <code>/scripts/mam.cookies</code> inside the qBittorrent container. A User Script refreshes it every 30 minutes:</p>
+      <pre>docker exec qbittorrent curl -c /scripts/mam.cookies -b /scripts/mam.cookies \
+  https://t.myanonamouse.net/json/dynamicSeedbox.php</pre>
+      <p>Schedule: <code>*/30 * * * *</code> in User Scripts plugin.</p>
+    </div>
+
+    <div class="card">
+      <h3>Tracker Errors</h3>
+      <table>
+        <tr><th>Error</th><th>Fix</th></tr>
+        <tr><td>Port 6881 is blacklisted</td><td>Change qBit listening port to 38077 (or current forwarded port)</td></tr>
+        <tr><td>Unrecognized host/PassKey</td><td>Re-run the dynamic seedbox curl command to update IP</td></tr>
+        <tr><td>Invalid session - ASN mismatch</td><td>Add the new ASN via Manage Session on MAM using the current VPN IP</td></tr>
+        <tr><td>Invalid session - IP mismatch</td><td>Session cookie was created from wrong IP — create new session from VPN IP</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- QBIT -->
+  <div id="qbit" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">⬇️</div>
+      <h2>qBittorrent Categories</h2>
+    </div>
+
+    <div class="card">
+      <h3>Category Configuration</h3>
+      <p>Categories route completed downloads to the correct torrent folder. In qBittorrent web UI → right-click sidebar → <strong>Add Category</strong>.</p>
+      <table>
+        <tr><th>Category</th><th>Save Path (container)</th><th>Host Path</th></tr>
+        <tr><td>audiobooks</td><td><code>/data/torrents/audiobooks</code></td><td><code>/mnt/user/data/torrents/audiobooks</code></td></tr>
+        <tr><td>ebooks</td><td><code>/data/torrents/ebooks</code></td><td><code>/mnt/user/data/torrents/ebooks</code></td></tr>
+        <tr><td>comics</td><td><code>/data/torrents/comics</code></td><td><code>/mnt/user/data/torrents/comics</code></td></tr>
+        <tr><td>manga</td><td><code>/data/torrents/manga</code></td><td><code>/mnt/user/data/torrents/manga</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Seeding Settings</h3>
+      <table>
+        <tr><th>Setting</th><th>Value</th></tr>
+        <tr><td>When ratio reaches</td><td>2.0</td></tr>
+        <tr><td>Then</td><td>Stop torrent (not Remove)</td></tr>
+        <tr><td>Global upload limit</td><td>2400 KB/s (80% of VPN upload)</td></tr>
+        <tr><td>Max active uploads</td><td>5</td></tr>
+      </table>
+      <div class="alert warn" style="margin-top:14px">
+        <span class="alert-icon">⚠️</span>
+        <div>Set to <strong>Stop</strong>, not Remove. Removing deletes the file from the torrents folder which breaks the hardlink seeding setup.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Port Forwarding (ProtonVPN)</h3>
+      <p>Gluetun handles port forwarding automatically via ProtonVPN. The forwarded port is written to <code>/tmp/gluetun/forwarded_port</code> inside the Gluetun container.</p>
+      <p>A User Script syncs the port to qBittorrent every 30 minutes:</p>
+      <pre>bash /mnt/user/appdata/qbittorrent/scripts/sync-port.sh</pre>
+      <p>Schedule: <code>*/30 * * * *</code></p>
+    </div>
+  </div>
+
+  <!-- HARDLINK -->
+  <div id="hardlink" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(91,141,239,0.1)">🔗</div>
+      <h2>Hardlink Script</h2>
+    </div>
+
+    <div class="alert success">
+      <span class="alert-icon">✓</span>
+      <div>Hardlinks create a second pointer to the same data on disk. Zero extra storage used. Deleting from <code>/torrents/</code> does not affect the copy in <code>/media/</code>.</div>
+    </div>
+
+    <div class="card">
+      <h3>Script Location</h3>
+      <p>Script is stored on the Unraid host and mounted into the qBittorrent container:</p>
+      <table>
+        <tr><th>Location</th><th>Path</th></tr>
+        <tr><td>Host</td><td><code>/mnt/user/appdata/qbittorrent/scripts/on-complete.sh</code></td></tr>
+        <tr><td>Container</td><td><code>/scripts/on-complete.sh</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Script</h3>
+      <pre>#!/bin/bash
+
+CATEGORY="$1"
+FILE_PATH="$2"
+LOG="/scripts/on-complete.log"
+
+case "$CATEGORY" in
+  audiobooks)
+    DEST="/data/media/audiobooks"
+    ;;
+  ebooks)
+    DEST="/data/media/ebooks"
+    ;;
+  comics)
+    DEST="/data/media/comics"
+    ;;
+  manga)
+    DEST="/data/media/manga"
+    ;;
+  *)
+    echo "$(date) - Skipping category: $CATEGORY" >> "$LOG"
+    exit 0
+    ;;
+esac
+
+cp -rl "$FILE_PATH" "$DEST/"
+echo "$(date) - Hardlinked $FILE_PATH to $DEST" >> "$LOG"</pre>
+    </div>
+
+    <div class="card">
+      <h3>qBittorrent Configuration</h3>
+      <p>In qBittorrent → Settings → Downloads → Run external program on torrent completion:</p>
+      <pre>/scripts/on-complete.sh "%L" "%F"</pre>
+      <p><code>%L</code> = category label &nbsp;·&nbsp; <code>%F</code> = content path</p>
+    </div>
+
+    <div class="card">
+      <h3>Testing</h3>
+      <pre># Create a test file
+touch /mnt/user/data/torrents/audiobooks/test.epub
+
+# Run the script manually
+docker exec qbittorrent /scripts/on-complete.sh audiobooks "/data/torrents/audiobooks/test.epub"
+
+# Verify hardlink appeared
+ls /mnt/user/data/media/audiobooks/
+
+# Check the log
+cat /mnt/user/appdata/qbittorrent/scripts/on-complete.log
+
+# Clean up test files
+rm /mnt/user/data/torrents/audiobooks/test.epub
+rm /mnt/user/data/media/audiobooks/test.epub</pre>
+    </div>
+  </div>
+
+  <!-- METADATA -->
+  <div id="metadata" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,166,35,0.1)">✏️</div>
+      <h2>Fixing Metadata</h2>
+    </div>
+
+    <div class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <div>Always fix metadata <strong>before</strong> running the organizer script. The organizer reads directly from ABS — bad metadata creates bad folder names.</div>
+    </div>
+
+    <div class="card">
+      <h3>Fields That Matter for Organization</h3>
+      <table>
+        <tr><th>Field</th><th>Used for</th><th>Example</th></tr>
+        <tr><td>Author</td><td>Top-level folder</td><td>Brandon Sanderson</td></tr>
+        <tr><td>Series</td><td>Series folder</td><td>The Mistborn Saga</td></tr>
+        <tr><td>Series Sequence</td><td>Number prefix on book folder</td><td>#1 → <code>01 -</code></td></tr>
+        <tr><td>Title</td><td>Book folder name</td><td>The Final Empire</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>How to Fix Metadata</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">
+          <h4>Open the book in Audiobookshelf</h4>
+          <p>Click the book → click the <strong>pencil/edit icon</strong></p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">
+          <h4>Go to the Match tab</h4>
+          <p>Select <strong>Audible.com</strong> as provider, search by title and author. If you have the ASIN from Audible, use that directly for a precise match.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">
+          <h4>Verify the result</h4>
+          <p>Check that Author is correct (not the narrator), Series name is consistent with other books in the series, and sequence number is set.</p>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">
+          <h4>Save & Close</h4>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Common Metadata Problems</h3>
+      <table>
+        <tr><th>Problem</th><th>Fix</th></tr>
+        <tr><td>Narrator listed as author</td><td>Manually correct Author field — common with Jim Dale Harry Potter editions</td></tr>
+        <tr><td>Series field empty</td><td>Add series name and sequence manually</td></tr>
+        <tr><td>Inconsistent series names</td><td>Make sure all books in a series use identical series name text</td></tr>
+        <tr><td>Multi-book torrent not matching</td><td>Split into per-book subfolders first, rescan, then match individually</td></tr>
+        <tr><td>Author shows translator</td><td>Set Author to original author (e.g. Homer, not Emily Wilson - translator)</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Splitting Multi-Book Torrents</h3>
+      <p>When a single torrent contains an entire series (e.g. ASOIAF 1–5), ABS can't match it to a single book. Split it into per-book subfolders first:</p>
+      <pre># Example: A Song of Ice and Fire
+BASE="/mnt/user/data/media/audiobooks/george r. r. martin a song of ice and fire 1-5 m4b"
+
+mkdir -p "$BASE/A Game of Thrones"
+mkdir -p "$BASE/A Clash of Kings"
+mkdir -p "$BASE/A Storm of Swords"
+mkdir -p "$BASE/A Feast for Crows"
+mkdir -p "$BASE/A Dance with Dragons"
+
+mv "$BASE/"*"game of thrones"* "$BASE/A Game of Thrones/"
+mv "$BASE/"*"clash of kings"* "$BASE/A Clash of Kings/"
+mv "$BASE/"*"storm of swords"* "$BASE/A Storm of Swords/"
+mv "$BASE/"*"feast for crows"* "$BASE/A Feast for Crows/"
+mv "$BASE/"*"dance with dragons"* "$BASE/A Dance with Dragons/"</pre>
+      <p>Then trigger a library scan in ABS — it will see 5 separate books.</p>
+    </div>
+  </div>
+
+  <!-- PROVIDERS -->
+  <div id="providers" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,166,35,0.1)">🔎</div>
+      <h2>Metadata Providers</h2>
+    </div>
+
+    <div class="card">
+      <h3>Available Providers</h3>
+      <table>
+        <tr><th>Provider</th><th>Best for</th><th>Notes</th></tr>
+        <tr><td>Audible.com</td><td>Audiobooks ✅</td><td>Best choice — correct author/narrator separation, series data, cover art</td></tr>
+        <tr><td>Google Books</td><td>Ebooks</td><td>Default, poor for audiobooks — often misidentifies narrator as author</td></tr>
+        <tr><td>iTunes</td><td>Fallback</td><td>Decent for popular titles</td></tr>
+        <tr><td>Open Library</td><td>Older/public domain</td><td>Good for classics</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Library Default Provider</h3>
+      <p>Set the library default to Audible.com so every new match defaults to the right provider:</p>
+      <p><strong>Settings → Libraries → Audiobooks → Metadata Provider → Audible.com</strong></p>
+    </div>
+
+    <div class="card">
+      <h3>Matching by ASIN</h3>
+      <p>For precise matches (especially when multiple editions exist), use the Audible ASIN directly in the Match tab search field. The ASIN is in the Audible URL: <code>audible.com/pd/title/B01234567</code> — the <code>B01234567</code> part.</p>
+    </div>
+  </div>
+
+  <!-- STRUCTURE -->
+  <div id="structure" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(167,139,250,0.1)">📁</div>
+      <h2>Folder Structure</h2>
+    </div>
+
+    <div class="card">
+      <h3>Target Structure</h3>
+      <div class="folder-tree">
+<span class="dir">/data/media/audiobooks/</span>
+├── <span class="dir">Brandon Sanderson/</span>
+│   └── <span class="dir">The Mistborn Saga/</span>
+│       ├── <span class="dir">01 - The Final Empire/</span>
+│       │   └── <span class="file">Book 01 - The Final Empire.m4b</span>
+│       ├── <span class="dir">02 - The Well of Ascension/</span>
+│       └── <span class="dir">03 - The Hero of Ages/</span>
+├── <span class="dir">George R. R. Martin/</span>
+│   └── <span class="dir">A Song of Ice and Fire/</span>
+│       ├── <span class="dir">01 - A Game of Thrones/</span>
+│       │   ├── <span class="file">part 1.m4b</span>
+│       │   ├── <span class="file">part 2.m4b</span>
+│       │   └── <span class="file">part 3.m4b</span>
+│       └── <span class="dir">02 - A Clash of Kings/</span>
+└── <span class="dir">Susanna Clarke/</span>
+    └── <span class="dir">Piranesi/</span>   <span class="comment">&lt;-- no series, so Author/Title only</span>
+        └── <span class="file">Piranesi by Susanna Clarke.m4b</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Structure Rules</h3>
+      <table>
+        <tr><th>Condition</th><th>Structure</th></tr>
+        <tr><td>Book has series + sequence</td><td><code>Author / Series / ## - Title /</code></td></tr>
+        <tr><td>Book has series, no sequence</td><td><code>Author / Series / Title /</code></td></tr>
+        <tr><td>Standalone book (no series)</td><td><code>Author / Title /</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Notes</h3>
+      <ul>
+        <li>Series numbers are zero-padded (1 → <code>01</code>, 10 → <code>10</code>) for correct alphabetical sort</li>
+        <li>Multi-part books (part 1, part 2) go inside the same book folder</li>
+        <li>The organizer strips <code>#N</code> and extra series info from series names (e.g. <code>Harry Potter #1, Wizarding World Collection #1</code> → <code>Harry Potter</code>)</li>
+        <li>Audiobookshelf does not require clean folder structure — this is purely for browsing via file manager</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ORGANIZER -->
+  <div id="organizer" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(167,139,250,0.1)">⚙️</div>
+      <h2>Organizer Script</h2>
+    </div>
+
+    <div class="card">
+      <h3>Script Location</h3>
+      <table>
+        <tr><th>Location</th><th>Path</th></tr>
+        <tr><td>Host</td><td><code>/mnt/user/appdata/audiobookshelf/scripts/abs-organize.js</code></td></tr>
+        <tr><td>Container</td><td><code>/scripts/abs-organize.js</code></td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>How to Run</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">
+          <h4>Dry run first (default)</h4>
+          <p>The script always runs in dry run mode by default — it logs what it <em>would</em> do without moving anything.</p>
+          <pre>docker exec audiobookshelf node /scripts/abs-organize.js</pre>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">
+          <h4>Review the log</h4>
+          <pre>cat /mnt/user/data/media/audiobooks/organize.log</pre>
+          <p>Confirm the moves look correct before proceeding.</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">
+          <h4>Set DRY_RUN = false and run for real</h4>
+          <pre>sed -i 's/DRY_RUN = true/DRY_RUN = false/' \
+  /mnt/user/appdata/audiobookshelf/scripts/abs-organize.js
+
+docker exec audiobookshelf node /scripts/abs-organize.js</pre>
+        </div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-content">
+          <h4>Reset DRY_RUN back to true</h4>
+          <pre>sed -i 's/DRY_RUN = false/DRY_RUN = true/' \
+  /mnt/user/appdata/audiobookshelf/scripts/abs-organize.js</pre>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>What the Script Does</h3>
+      <ul>
+        <li>Calls the ABS API to get all books in the Audiobooks library</li>
+        <li>For each book, reads title, author, series name, and sequence number from ABS metadata</li>
+        <li>Strips series number from series folder name (<code>Mistborn Saga #1</code> → <code>Mistborn Saga</code>)</li>
+        <li>Prepends sequence to book folder (<code>#1</code> → <code>01 - Title</code>)</li>
+        <li>Moves directories by moving their <em>contents</em> to avoid double-nesting</li>
+        <li>Skips books already in the correct location</li>
+        <li>Logs every action to <code>/audiobooks/organize.log</code></li>
+      </ul>
+    </div>
+
+    <div class="alert warn">
+      <span class="alert-icon">⚠️</span>
+      <div>After running the organizer, trigger a library rescan in Audiobookshelf so it picks up the new file paths. <strong>Settings → Libraries → Audiobooks → Scan Library.</strong></div>
+    </div>
+  </div>
+
+  <!-- CLEANUP -->
+  <div id="cleanup" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(167,139,250,0.1)">🧹</div>
+      <h2>Cleanup</h2>
+    </div>
+
+    <div class="card">
+      <h3>Remove Empty Folders</h3>
+      <p>After the organizer runs, leftover empty folders remain (e.g. <code>A Song of Ice and Fire #1/</code>). Remove them all in one command:</p>
+      <pre>find /mnt/user/data/media/audiobooks -type d -empty -delete</pre>
+      <div class="alert info" style="margin-top: 14px">
+        <span class="alert-icon">ℹ️</span>
+        <div>This is safe to run at any time — it only deletes directories that are completely empty.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Removing Completed Torrents</h3>
+      <p>Once a torrent has hit its seeding ratio (2.0) and stopped, it's safe to remove:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-content">
+          <p>In qBittorrent, filter by <strong>Stopped</strong> status</p>
+        </div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-content">
+          <p>Right-click → <strong>Remove</strong> (not "Remove and delete files")</p>
+        </div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-content">
+          <p>The file in <code>/data/torrents/audiobooks/</code> is deleted. The hardlinked copy in <code>/data/media/audiobooks/</code> is unaffected.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMANDS -->
+  <div id="commands" class="section">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(107,117,145,0.1)">⌨️</div>
+      <h2>Quick Reference Commands</h2>
+    </div>
+
+    <div class="card">
+      <h3>MAM Dynamic Seedbox</h3>
+      <pre># Register/update VPN IP with MAM
+docker exec qbittorrent curl -c /scripts/mam.cookies \
+  -b 'mam_id=YOUR_SESSION_STRING' \
+  https://t.myanonamouse.net/json/dynamicSeedbox.php
+
+# Refresh using saved cookie (for cron)
+docker exec qbittorrent curl -c /scripts/mam.cookies \
+  -b /scripts/mam.cookies \
+  https://t.myanonamouse.net/json/dynamicSeedbox.php</pre>
+    </div>
+
+    <div class="card">
+      <h3>Organizer</h3>
+      <pre># Dry run (safe, always do this first)
+docker exec audiobookshelf node /scripts/abs-organize.js
+
+# Set to live mode
+sed -i 's/DRY_RUN = true/DRY_RUN = false/' \
+  /mnt/user/appdata/audiobookshelf/scripts/abs-organize.js
+
+# Run live
+docker exec audiobookshelf node /scripts/abs-organize.js
+
+# Reset back to dry run
+sed -i 's/DRY_RUN = false/DRY_RUN = true/' \
+  /mnt/user/appdata/audiobookshelf/scripts/abs-organize.js
+
+# Remove empty folders
+find /mnt/user/data/media/audiobooks -type d -empty -delete
+
+# View organize log
+cat /mnt/user/data/media/audiobooks/organize.log</pre>
+    </div>
+
+    <div class="card">
+      <h3>Port Sync</h3>
+      <pre># Check current forwarded port
+docker exec gluetun cat /tmp/gluetun/forwarded_port
+
+# Manually sync port to qBittorrent
+bash /mnt/user/appdata/qbittorrent/scripts/sync-port.sh
+
+# View sync log
+cat /mnt/user/appdata/qbittorrent/scripts/sync-port.log</pre>
+    </div>
+
+    <div class="card">
+      <h3>Hardlink Script</h3>
+      <pre># Test the hardlink script manually
+touch /mnt/user/data/torrents/audiobooks/test.m4b
+docker exec qbittorrent /scripts/on-complete.sh audiobooks \
+  "/data/torrents/audiobooks/test.m4b"
+ls /mnt/user/data/media/audiobooks/
+cat /mnt/user/appdata/qbittorrent/scripts/on-complete.log
+
+# Clean up test
+rm /mnt/user/data/torrents/audiobooks/test.m4b
+rm /mnt/user/data/media/audiobooks/test.m4b</pre>
+    </div>
+  </div>
+
+</main>
+
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('nav a').forEach(a => {
+    if (a.getAttribute('onclick') && a.getAttribute('onclick').includes("'" + id + "'")) {
+      a.classList.add('active');
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
+window.addEventListener('scroll', () => {
+  document.getElementById('scrolltop').classList.toggle('visible', window.scrollY > 300);
+});
+</script>
+</body>
+</html>
